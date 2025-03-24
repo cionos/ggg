@@ -33,6 +33,7 @@
             overflow-x: hidden;
             position: relative;
             background-color: #fff9fb;
+            touch-action: manipulation;
         }
         
         /* 背景图设置 - 移动端优化 */
@@ -54,6 +55,35 @@
             height: 100%;
             object-fit: cover;
             opacity: 0.8;
+        }
+        
+        /* 加载动画 */
+        .loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            transition: opacity 0.5s ease;
+        }
+        
+        .loader-spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
         
         /* 标题样式 - 移动端优化 */
@@ -87,8 +117,8 @@
         .mobile-layout {
             display: flex;
             flex-direction: column;
-            padding-top: 70px; /* 给标题留出空间 */
-            padding-bottom: 80px; /* 给底部按钮留出空间 */
+            padding-top: 70px;
+            padding-bottom: 80px;
         }
         
         /* 照片墙 - 移动端优化 */
@@ -114,6 +144,11 @@
             border-radius: 8px;
             border: 2px solid white;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: transform 0.2s ease;
+        }
+        
+        .photo-gallery img:active {
+            transform: scale(0.95);
         }
         
         /* 轮播图 - 移动端优化 */
@@ -132,6 +167,7 @@
             transition: transform 0.3s ease;
             height: 50vh;
             max-height: 300px;
+            will-change: transform;
         }
         
         .slide {
@@ -164,6 +200,12 @@
             align-items: center;
             justify-content: center;
             z-index: 10;
+            cursor: pointer;
+            transition: transform 0.1s ease;
+        }
+        
+        .carousel-btn:active {
+            transform: translateY(-50%) scale(0.9);
         }
         
         .carousel-prev {
@@ -201,6 +243,13 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
+            transition: transform 0.1s ease, opacity 0.2s ease;
+            cursor: pointer;
+        }
+        
+        .mobile-button:active {
+            transform: scale(0.95);
+            opacity: 0.8;
         }
         
         .mobile-button span {
@@ -223,6 +272,29 @@
             display: none;
             max-height: 50vh;
             overflow-y: auto;
+            backdrop-filter: blur(5px);
+        }
+        
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            padding-bottom: 5px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .panel-title {
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+        
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 18px;
+            cursor: pointer;
+            color: #999;
         }
         
         .input-group {
@@ -236,6 +308,36 @@
             border: 1px solid #ddd;
             border-radius: 20px;
             margin-right: 5px;
+            font-family: inherit;
+        }
+        
+        /* 消息样式 */
+        .message {
+            padding: 8px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .message-time {
+            font-size: 10px;
+            color: #999;
+            margin-top: 2px;
+        }
+        
+        /* 弹幕样式 */
+        .danmu-item {
+            position: absolute;
+            white-space: nowrap;
+            font-size: 16px;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+            animation: danmuMove linear forwards;
+            pointer-events: none;
+            z-index: 15;
+        }
+        
+        @keyframes danmuMove {
+            from { transform: translateX(100vw); }
+            to { transform: translateX(-100%); }
         }
         
         /* 音乐按钮 - 移动端优化 */
@@ -254,6 +356,12 @@
             justify-content: center;
             box-shadow: 0 3px 10px rgba(0,0,0,0.2);
             z-index: 15;
+            cursor: pointer;
+            transition: transform 0.1s ease;
+        }
+        
+        .music-btn:active {
+            transform: scale(0.9);
         }
         
         /* 特效优化 */
@@ -263,16 +371,57 @@
             z-index: 15;
             animation: floatDown 3s linear forwards;
             font-size: 24px;
+            will-change: transform;
         }
         
-        .click-rabbit {
+        @keyframes floatDown {
+            0% {
+                transform: translateY(0) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) scale(0.5);
+                opacity: 0;
+            }
+        }
+        
+        /* 图片预览 */
+        .image-preview {
             position: fixed;
-            width: 40px;
-            height: 40px;
-            background: url('rabbit.png') center/contain no-repeat;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            opacity: 0;
             pointer-events: none;
-            z-index: 15;
-            animation: rabbitJump 1s ease-out forwards;
+            transition: opacity 0.3s ease;
+        }
+        
+        .image-preview.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+        
+        .image-preview img {
+            max-width: 90%;
+            max-height: 90%;
+            object-fit: contain;
+        }
+        
+        .close-preview {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: white;
+            font-size: 30px;
+            background: none;
+            border: none;
+            cursor: pointer;
         }
         
         /* 响应式调整 */
@@ -316,9 +465,14 @@
     </style>
 </head>
 <body>
+    <!-- 加载动画 -->
+    <div class="loader">
+        <div class="loader-spinner"></div>
+    </div>
+    
     <!-- 背景图容器 -->
     <div class="background-container">
-        <img class="background-image" src="background.jpg" alt="背景图">
+        <img class="background-image" src="background.jpg" alt="背景图" loading="lazy">
     </div>
     
     <!-- 标题 -->
@@ -331,16 +485,16 @@
         <!-- 照片墙 - 横向滚动 -->
         <div class="photo-gallery-container">
             <div class="photo-gallery">
-                <img src="photo1_thumb.jpg" alt="Asa的美好回忆1">
-                <img src="photo2_thumb.jpg" alt="Asa的美好回忆2">
-                <img src="photo3_thumb.jpg" alt="Asa的美好回忆3">
-                <img src="photo4_thumb.jpg" alt="Asa的美好回忆4">
-                <img src="photo5_thumb.jpg" alt="Asa的美好回忆5">
-                <img src="photo6_thumb.jpg" alt="Asa的美好回忆6">
-                <img src="photo7_thumb.jpg" alt="Asa的美好回忆7">
-                <img src="photo8_thumb.jpg" alt="Asa的美好回忆8">
-                <img src="photo9_thumb.jpg" alt="Asa的美好回忆9">
-                <img src="photo10_thumb.jpg" alt="Asa的美好回忆10">
+                <img src="photo1_thumb.jpg" alt="Asa的美好回忆1" loading="lazy" data-full="photo1.jpg">
+                <img src="photo2_thumb.jpg" alt="Asa的美好回忆2" loading="lazy" data-full="photo2.jpg">
+                <img src="photo3_thumb.jpg" alt="Asa的美好回忆3" loading="lazy" data-full="photo3.jpg">
+                <img src="photo4_thumb.jpg" alt="Asa的美好回忆4" loading="lazy" data-full="photo4.jpg">
+                <img src="photo5_thumb.jpg" alt="Asa的美好回忆5" loading="lazy" data-full="photo5.jpg">
+                <img src="photo6_thumb.jpg" alt="Asa的美好回忆6" loading="lazy" data-full="photo6.jpg">
+                <img src="photo7_thumb.jpg" alt="Asa的美好回忆7" loading="lazy" data-full="photo7.jpg">
+                <img src="photo8_thumb.jpg" alt="Asa的美好回忆8" loading="lazy" data-full="photo8.jpg">
+                <img src="photo9_thumb.jpg" alt="Asa的美好回忆9" loading="lazy" data-full="photo9.jpg">
+                <img src="photo10_thumb.jpg" alt="Asa的美好回忆10" loading="lazy" data-full="photo10.jpg">
             </div>
         </div>
         
@@ -349,49 +503,71 @@
             <div class="slideshow-container">
                 <!-- 轮播项将通过JS动态添加 -->
             </div>
-            <button class="carousel-btn carousel-prev">❮</button>
-            <button class="carousel-btn carousel-next">❯</button>
+            <button class="carousel-btn carousel-prev" aria-label="上一张">❮</button>
+            <button class="carousel-btn carousel-next" aria-label="下一张">❯</button>
         </section>
     </div>
 
     <!-- 互动按钮 - 移动端底部固定 -->
     <div class="interaction-buttons">
-        <button id="like-btn" class="mobile-button">❤️<br><span>点赞</span></button>
-        <button id="danmu-btn" class="mobile-button">🎆<br><span>弹幕</span></button>
-        <button id="chat-toggle" class="mobile-button">💬<br><span>留言</span></button>
-        <button id="drawing-btn" class="mobile-button">🎨<br><span>涂鸦</span></button>
+        <button id="like-btn" class="mobile-button" aria-label="点赞">❤️<br><span>点赞</span></button>
+        <button id="danmu-btn" class="mobile-button" aria-label="弹幕">🎆<br><span>弹幕</span></button>
+        <button id="chat-toggle" class="mobile-button" aria-label="留言">💬<br><span>留言</span></button>
+        <button id="drawing-btn" class="mobile-button" aria-label="涂鸦">🎨<br><span>涂鸦</span></button>
     </div>
 
     <!-- 弹幕输入区域 -->
     <div id="danmu-input-container" class="panel">
+        <div class="panel-header">
+            <div class="panel-title">弹幕留言</div>
+            <button class="close-btn" id="close-danmu">×</button>
+        </div>
         <div id="danmu-container"></div>
         <div class="input-group">
-            <input type="text" id="danmu-input" placeholder="输入弹幕内容...">
+            <input type="text" id="danmu-input" placeholder="输入弹幕内容..." aria-label="弹幕输入">
             <button id="danmu-send" class="mobile-button">发送</button>
         </div>
     </div>
 
     <!-- 聊天室 -->
     <div id="chat-box-container" class="panel">
+        <div class="panel-header">
+            <div class="panel-title">生日祝福</div>
+            <button class="close-btn" id="close-chat">×</button>
+        </div>
         <div id="chat-box"></div>
         <div class="input-group">
-            <input type="text" id="chat-input" placeholder="输入消息">
+            <input type="text" id="chat-input" placeholder="输入消息" aria-label="消息输入">
             <button id="chat-send" class="mobile-button">发送</button>
         </div>
     </div>
 
     <!-- 音乐按钮 -->
-    <button class="music-btn">🎵</button>
+    <button class="music-btn" aria-label="音乐控制">🎵</button>
+
+    <!-- 图片预览 -->
+    <div class="image-preview" id="image-preview">
+        <button class="close-preview" aria-label="关闭预览">×</button>
+        <img id="preview-image" src="" alt="预览图片">
+    </div>
 
     <!-- 音乐播放器 -->
-    <audio id="music" loop>
+    <audio id="music" loop preload="metadata">
         <source src="birthday.mp3" type="audio/mpeg">
     </audio>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // 1. 初始化轮播图
-            function initSlideshow() {
+            // 移除加载动画
+            setTimeout(() => {
+                document.querySelector('.loader').style.opacity = '0';
+                setTimeout(() => {
+                    document.querySelector('.loader').style.display = 'none';
+                }, 500);
+            }, 1000);
+            
+            // 1. 轮播图模块
+            const Slideshow = (function() {
                 const images = [
                     'slide1.jpg', 'slide2.jpg', 'slide3.jpg', 
                     'slide4.jpg', 'slide5.jpg', 'slide6.jpg',
@@ -406,27 +582,27 @@
                 const prevBtn = document.querySelector(".carousel-prev");
                 const nextBtn = document.querySelector(".carousel-next");
                 let currentIndex = 1;
+                let autoSlideInterval;
                 
-                // 创建轮播项
                 function createSlides() {
                     // 克隆最后一张放到开头
                     const lastClone = document.createElement('div');
                     lastClone.className = 'slide';
-                    lastClone.innerHTML = `<img src="${images[images.length-1]}" alt="轮播图">`;
+                    lastClone.innerHTML = `<img src="${images[images.length-1]}" alt="轮播图" loading="lazy">`;
                     track.appendChild(lastClone);
                     
                     // 添加所有真实图片
                     images.forEach(img => {
                         const slide = document.createElement('div');
                         slide.className = 'slide';
-                        slide.innerHTML = `<img src="${img}" alt="轮播图">`;
+                        slide.innerHTML = `<img src="${img}" alt="轮播图" loading="lazy">`;
                         track.appendChild(slide);
                     });
                     
                     // 克隆第一张放到最后
                     const firstClone = document.createElement('div');
                     firstClone.className = 'slide';
-                    firstClone.innerHTML = `<img src="${images[0]}" alt="轮播图">`;
+                    firstClone.innerHTML = `<img src="${images[0]}" alt="轮播图" loading="lazy">`;
                     track.appendChild(firstClone);
                 }
                 
@@ -447,70 +623,95 @@
                     goToSlide(currentIndex);
                 }
                 
-                // 初始化
-                createSlides();
-                goToSlide(1);
+                function startAutoSlide() {
+                    autoSlideInterval = setInterval(showNextSlide, 3000);
+                }
                 
-                // 无缝连接处理
-                track.addEventListener('transitionend', () => {
-                    if (currentIndex === 0) {
-                        track.style.transition = 'none';
-                        currentIndex = track.children.length - 2;
-                        goToSlide(currentIndex);
-                    } else if (currentIndex === track.children.length - 1) {
-                        track.style.transition = 'none';
-                        currentIndex = 1;
-                        goToSlide(currentIndex);
-                    }
-                });
+                function stopAutoSlide() {
+                    clearInterval(autoSlideInterval);
+                }
                 
-                // 添加事件监听
-                prevBtn.addEventListener('click', showPrevSlide);
-                nextBtn.addEventListener('click', showNextSlide);
-                
-                // 触摸滑动支持
-                let startX = 0;
-                let isSwiping = false;
-                
-                track.addEventListener('touchstart', (e) => {
-                    startX = e.touches[0].clientX;
-                    isSwiping = true;
-                    track.style.transition = 'none';
-                });
-                
-                track.addEventListener('touchmove', (e) => {
-                    if (!isSwiping) return;
-                    const x = e.touches[0].clientX;
-                    const diff = startX - x;
-                    track.style.transform = `translateX(calc(-${currentIndex * 100}% - ${diff}px))`;
-                });
-                
-                track.addEventListener('touchend', (e) => {
-                    if (!isSwiping) return;
-                    isSwiping = false;
+                function initTouchEvents() {
+                    let startX = 0;
+                    let isSwiping = false;
                     
-                    const endX = e.changedTouches[0].clientX;
-                    const diff = startX - endX;
+                    track.addEventListener('touchstart', (e) => {
+                        startX = e.touches[0].clientX;
+                        isSwiping = true;
+                        track.style.transition = 'none';
+                        stopAutoSlide();
+                    });
                     
-                    if (diff > 50) {
-                        showNextSlide();
-                    } else if (diff < -50) {
-                        showPrevSlide();
-                    } else {
-                        track.style.transition = 'transform 0.3s ease';
-                        goToSlide(currentIndex);
-                    }
-                });
-            }
+                    track.addEventListener('touchmove', (e) => {
+                        if (!isSwiping) return;
+                        const x = e.touches[0].clientX;
+                        const diff = startX - x;
+                        track.style.transform = `translateX(calc(-${currentIndex * 100}% - ${diff}px))`;
+                    });
+                    
+                    track.addEventListener('touchend', (e) => {
+                        if (!isSwiping) return;
+                        isSwiping = false;
+                        
+                        const endX = e.changedTouches[0].clientX;
+                        const diff = startX - endX;
+                        
+                        if (diff > 50) {
+                            showNextSlide();
+                        } else if (diff < -50) {
+                            showPrevSlide();
+                        } else {
+                            track.style.transition = 'transform 0.3s ease';
+                            goToSlide(currentIndex);
+                        }
+                        
+                        startAutoSlide();
+                    });
+                }
+                
+                function init() {
+                    createSlides();
+                    goToSlide(1);
+                    
+                    // 无缝连接处理
+                    track.addEventListener('transitionend', () => {
+                        if (currentIndex === 0) {
+                            track.style.transition = 'none';
+                            currentIndex = track.children.length - 2;
+                            goToSlide(currentIndex);
+                        } else if (currentIndex === track.children.length - 1) {
+                            track.style.transition = 'none';
+                            currentIndex = 1;
+                            goToSlide(currentIndex);
+                        }
+                    });
+                    
+                    // 添加事件监听
+                    prevBtn.addEventListener('click', showPrevSlide);
+                    nextBtn.addEventListener('click', showNextSlide);
+                    
+                    // 触摸滑动支持
+                    initTouchEvents();
+                    
+                    // 自动轮播
+                    startAutoSlide();
+                    
+                    // 鼠标悬停暂停
+                    track.addEventListener('mouseenter', stopAutoSlide);
+                    track.addEventListener('mouseleave', startAutoSlide);
+                }
+                
+                return {
+                    init
+                };
+            })();
             
-            // 2. 初始化互动功能
-            function initInteractions() {
-                // 点赞功能
+            // 2. 互动功能模块
+            const Interactions = (function() {
                 let likeCount = 0;
-                document.getElementById("like-btn").addEventListener("click", function() {
-                    likeCount++;
-                    
-                    // 爱心特效
+                const messages = JSON.parse(localStorage.getItem('birthdayMessages')) || [];
+                
+                function createHeart() {
                     const heart = document.createElement('div');
                     heart.className = 'heart';
                     heart.innerHTML = '❤️';
@@ -520,108 +721,211 @@
                     document.body.appendChild(heart);
                     
                     setTimeout(() => heart.remove(), 3000);
-                });
-                
-                // 弹幕功能
-                document.getElementById("danmu-btn").addEventListener("click", function() {
-                    const container = document.getElementById("danmu-input-container");
-                    container.style.display = container.style.display === "none" ? "block" : "none";
-                    document.getElementById("chat-box-container").style.display = "none";
-                });
-                
-                document.getElementById("danmu-send").addEventListener("click", sendDanmu);
-                document.getElementById("danmu-input").addEventListener("keypress", function(e) {
-                    if (e.key === 'Enter') sendDanmu();
-                });
-                
-                // 聊天室
-                document.getElementById("chat-toggle").addEventListener("click", function() {
-                    const chat = document.getElementById("chat-box-container");
-                    chat.style.display = chat.style.display === "none" ? "block" : "none";
-                    document.getElementById("danmu-input-container").style.display = "none";
-                });
-                
-                document.getElementById("chat-send").addEventListener("click", function() {
-                    const input = document.getElementById("chat-input");
-                    const text = input.value.trim();
-                    if (!text) return;
-                    
-                    addMessageToContainer("chat-box", text);
-                    input.value = "";
-                });
-                
-                // 音乐控制
-                const music = document.getElementById('music');
-                const musicBtn = document.querySelector('.music-btn');
-                let isMusicPlaying = false;
-                
-                function unlockAudio() {
-                    music.volume = 0.3;
-                    document.body.removeEventListener('click', unlockAudio);
                 }
                 
-                document.body.addEventListener('click', unlockAudio, { once: true });
+                function createDanmu(text) {
+                    const danmu = document.createElement('div');
+                    danmu.className = 'danmu-item';
+                    danmu.textContent = text;
+                    danmu.style.top = Math.random() * (window.innerHeight - 100) + 50 + 'px';
+                    danmu.style.color = `hsl(${Math.random() * 360}, 100%, 70%)`;
+                    danmu.style.animationDuration = `${Math.random() * 5 + 5}s`;
+                    document.body.appendChild(danmu);
+                    
+                    setTimeout(() => danmu.remove(), 10000);
+                }
                 
-                musicBtn.addEventListener('click', function() {
-                    if (isMusicPlaying) {
-                        music.pause();
-                        musicBtn.textContent = '🎵';
-                    } else {
-                        music.play()
-                            .then(() => {
-                                isMusicPlaying = true;
-                                musicBtn.textContent = '🔊';
-                            })
-                            .catch(error => {
-                                console.error('播放失败:', error);
-                            });
+                function addMessageToContainer(containerId, text, isNew = true) {
+                    const container = document.getElementById(containerId);
+                    const message = document.createElement('div');
+                    message.className = 'message';
+                    
+                    const now = new Date();
+                    const timeStr = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                    
+                    message.innerHTML = `
+                        <div>${text}</div>
+                        <div class="message-time">${timeStr}</div>
+                    `;
+                    
+                    container.appendChild(message);
+                    container.scrollTop = container.scrollHeight;
+                    
+                    if (isNew && containerId === 'chat-box') {
+                        messages.push({text, time: now.getTime()});
+                        localStorage.setItem('birthdayMessages', JSON.stringify(messages));
                     }
-                    isMusicPlaying = !isMusicPlaying;
-                });
+                }
                 
-                // 照片点击放大
-                document.querySelectorAll('.photo-gallery img').forEach(img => {
-                    img.addEventListener('click', function() {
-                        // 这里可以添加图片放大预览功能
-                        alert('点击了照片: ' + this.alt);
+                function loadMessages() {
+                    messages.forEach(msg => {
+                        const date = new Date(msg.time);
+                        const timeStr = date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                        
+                        const message = document.createElement('div');
+                        message.className = 'message';
+                        message.innerHTML = `
+                            <div>${msg.text}</div>
+                            <div class="message-time">${timeStr}</div>
+                        `;
+                        
+                        document.getElementById('chat-box').appendChild(message);
                     });
-                });
-            }
-            
-            // 辅助函数
-            function sendDanmu() {
-                const input = document.getElementById("danmu-input");
-                const text = input.value.trim();
-                if (!text) return;
+                    
+                    if (messages.length > 0) {
+                        document.getElementById('chat-box').scrollTop = document.getElementById('chat-box').scrollHeight;
+                    }
+                }
                 
-                createDanmu(text);
-                addMessageToContainer("danmu-container", text);
-                input.value = "";
-            }
-            
-            function createDanmu(text) {
-                const danmu = document.createElement('div');
-                danmu.className = 'danmu-item';
-                danmu.textContent = text;
-                danmu.style.top = Math.random() * (window.innerHeight - 100) + 50 + 'px';
-                danmu.style.color = `hsl(${Math.random() * 360}, 100%, 70%)`;
-                document.body.appendChild(danmu);
+                function initLikeButton() {
+                    document.getElementById("like-btn").addEventListener("click", function() {
+                        likeCount++;
+                        createHeart();
+                        
+                        // 按钮动画
+                        this.style.transform = 'scale(1.2)';
+                        setTimeout(() => {
+                            this.style.transform = 'scale(1)';
+                        }, 200);
+                    });
+                }
                 
-                setTimeout(() => danmu.remove(), 10000);
-            }
+                function initDanmu() {
+                    const danmuBtn = document.getElementById("danmu-btn");
+                    const danmuContainer = document.getElementById("danmu-input-container");
+                    const closeDanmu = document.getElementById("close-danmu");
+                    
+                    danmuBtn.addEventListener("click", function() {
+                        danmuContainer.style.display = "block";
+                        document.getElementById("chat-box-container").style.display = "none";
+                    });
+                    
+                    closeDanmu.addEventListener("click", function() {
+                        danmuContainer.style.display = "none";
+                    });
+                    
+                    document.getElementById("danmu-send").addEventListener("click", sendDanmu);
+                    document.getElementById("danmu-input").addEventListener("keypress", function(e) {
+                        if (e.key === 'Enter') sendDanmu();
+                    });
+                    
+                    function sendDanmu() {
+                        const input = document.getElementById("danmu-input");
+                        const text = input.value.trim();
+                        if (!text) return;
+                        
+                        createDanmu(text);
+                        addMessageToContainer("danmu-container", text, false);
+                        input.value = "";
+                    }
+                }
+                
+                function initChat() {
+                    const chatToggle = document.getElementById("chat-toggle");
+                    const chatContainer = document.getElementById("chat-box-container");
+                    const closeChat = document.getElementById("close-chat");
+                    
+                    chatToggle.addEventListener("click", function() {
+                        chatContainer.style.display = "block";
+                        document.getElementById("danmu-input-container").style.display = "none";
+                    });
+                    
+                    closeChat.addEventListener("click", function() {
+                        chatContainer.style.display = "none";
+                    });
+                    
+                    document.getElementById("chat-send").addEventListener("click", function() {
+                        const input = document.getElementById("chat-input");
+                        const text = input.value.trim();
+                        if (!text) return;
+                        
+                        addMessageToContainer("chat-box", text);
+                        input.value = "";
+                    });
+                    
+                    document.getElementById("chat-input").addEventListener("keypress", function(e) {
+                        if (e.key === 'Enter') {
+                            const input = document.getElementById("chat-input");
+                            const text = input.value.trim();
+                            if (!text) return;
+                            
+                            addMessageToContainer("chat-box", text);
+                            input.value = "";
+                        }
+                    });
+                }
+                
+                function initMusic() {
+                    const music = document.getElementById('music');
+                    const musicBtn = document.querySelector('.music-btn');
+                    let isMusicPlaying = false;
+                    
+                    function unlockAudio() {
+                        music.volume = 0.3;
+                        document.body.removeEventListener('click', unlockAudio);
+                    }
+                    
+                    document.body.addEventListener('click', unlockAudio, { once: true });
+                    
+                    musicBtn.addEventListener('click', function() {
+                        if (isMusicPlaying) {
+                            music.pause();
+                            musicBtn.textContent = '🎵';
+                        } else {
+                            music.play()
+                                .then(() => {
+                                    isMusicPlaying = true;
+                                    musicBtn.textContent = '🔊';
+                                })
+                                .catch(error => {
+                                    console.error('播放失败:', error);
+                                });
+                        }
+                        isMusicPlaying = !isMusicPlaying;
+                    });
+                }
+                
+                function initImagePreview() {
+                    const preview = document.getElementById('image-preview');
+                    const previewImage = document.getElementById('preview-image');
+                    const closePreview = document.querySelector('.close-preview');
+                    
+                    document.querySelectorAll('.photo-gallery img').forEach(img => {
+                        img.addEventListener('click', function() {
+                            previewImage.src = this.dataset.full || this.src;
+                            previewImage.alt = this.alt;
+                            preview.classList.add('active');
+                        });
+                    });
+                    
+                    closePreview.addEventListener('click', function() {
+                        preview.classList.remove('active');
+                    });
+                    
+                    preview.addEventListener('click', function(e) {
+                        if (e.target === preview) {
+                            preview.classList.remove('active');
+                        }
+                    });
+                }
+                
+                function init() {
+                    initLikeButton();
+                    initDanmu();
+                    initChat();
+                    initMusic();
+                    initImagePreview();
+                    loadMessages();
+                }
+                
+                return {
+                    init
+                };
+            })();
             
-            function addMessageToContainer(containerId, text) {
-                const container = document.getElementById(containerId);
-                const message = document.createElement('div');
-                message.textContent = text;
-                message.style.padding = '5px 0';
-                container.appendChild(message);
-                container.scrollTop = container.scrollHeight;
-            }
-            
-            // 初始化所有功能
-            initSlideshow();
-            initInteractions();
+            // 初始化所有模块
+            Slideshow.init();
+            Interactions.init();
         });
     </script>
 </body>
